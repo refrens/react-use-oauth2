@@ -1,6 +1,12 @@
 import { useEffect } from 'react';
 import { OAUTH_RESPONSE } from './constants';
-import { checkState, isWindowOpener, openerPostMessage, queryToObject } from './tools';
+import {
+	channelPostMessage,
+	checkState,
+	isBroadcastChannel,
+	openerPostMessage,
+	queryToObject,
+} from './tools';
 
 type Props = {
 	Component?: React.ReactElement;
@@ -15,6 +21,7 @@ export const OAuthPopup = ({
 		</div>
 	),
 }: Props) => {
+	const channel = new BroadcastChannel('oauth_channel');
 	useEffect(() => {
 		if (didInit) return;
 		didInit = true;
@@ -27,14 +34,11 @@ export const OAuthPopup = ({
 		const error = payload?.error;
 		const opener = window?.opener;
 
-		if (isWindowOpener(opener)) {
-			const stateOk = state && checkState(opener.sessionStorage, state);
+		if (isBroadcastChannel(channel)) {
+			const stateOk = state && checkState(sessionStorage, state);
 
 			if (!error && stateOk) {
-				openerPostMessage(opener, {
-					type: OAUTH_RESPONSE,
-					payload,
-				});
+				channelPostMessage(channel, { type: OAUTH_RESPONSE, payload });
 			} else {
 				const errorMessage = error
 					? decodeURI(error)
@@ -50,7 +54,7 @@ export const OAuthPopup = ({
 				});
 			}
 		} else {
-			throw new Error('No window opener');
+			throw new Error('No BroadcastChannel support');
 		}
 	}, []);
 

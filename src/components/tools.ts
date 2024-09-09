@@ -76,6 +76,12 @@ export const isWindowOpener = (opener: Window | null): opener is Window =>
 export const openerPostMessage = (opener: Window, message: TMessageData) =>
 	opener.postMessage(message);
 
+export const isBroadcastChannel = (channel: BroadcastChannel | null): channel is BroadcastChannel =>
+	channel !== null && channel !== undefined;
+
+export const channelPostMessage = (channel: BroadcastChannel, message: TMessageData) =>
+	channel.postMessage(message);
+
 export const cleanup = (
 	intervalRef: React.MutableRefObject<string | number | NodeJS.Timeout | undefined>,
 	popupRef: React.MutableRefObject<Window | null | undefined>,

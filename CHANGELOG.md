@@ -1,0 +1,13 @@
+
+
+## 2.0.2-release-test.0 (2024-09-09)
+
+
+### Bug Fixes
+
+* publish config correction ([33e9d2b](https://github.com/refrens/react-use-oauth2/commit/33e9d2b975b7e82c01d1f4bf5dc837e203e3e965))
+
+
+### Reverts
+
+* Revert "Add bearer token support for token server requests" ([a9e235a](https://github.com/refrens/react-use-oauth2/commit/a9e235a250969e07128a6ce31a421dc0de505e13))

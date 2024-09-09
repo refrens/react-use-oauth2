@@ -1,10 +1,15 @@
 {
-	"name": "@tasoskakour/react-use-oauth2",
+	"name": "@refrens/react-use-oauth2",
+	"version": "2.0.1",
 	"author": {
 		"name": "Tasos Kakouris",
 		"email": "tasoskakour@gmail.com",
 		"website": "https://tasoskakour.com"
 	},
+	"contributors": [
+		"Nitish Devadiga <nitish@refrens.com>",
+		"Nidhi Bhanushali <nidhi@refrens.com>"
+	],
 	"keywords": [
 		"react",
 		"hooks",
@@ -12,14 +17,13 @@
 		"nodejs",
 		"oauth2"
 	],
-	"version": "2.0.1",
 	"description": "A React hook that handles OAuth2 authorization flow.",
 	"license": "MIT",
-	"homepage": "https://github.com/tasoskakour/react-use-oauth2#readme",
+	"homepage": "https://github.com/refrens/react-use-oauth2#readme",
 	"bugs": {
-		"url": "https://github.com/tasoskakour/react-use-oauth2/issues"
+		"url": "https://github.com/refrens/react-use-oauth2/issues"
 	},
-	"repository": "github:tasoskakour/react-use-oauth2",
+	"repository": "github:refrens/react-use-oauth2",
 	"main": "dist/cjs/index.js",
 	"module": "dist/esm/index.js",
 	"dependencies": {
@@ -33,7 +37,13 @@
 		"test-unit": "jest --detectOpenHandles --runInBand --config jest.config.unit.ts",
 		"test-e2e": "start-server-and-test example \"http://localhost:3000|http://localhost:3001\" \"jest --detectOpenHandles --runInBand --config jest.config.e2e.ts\"",
 		"test": "npm run lint && npm run test-typeCheck && npm run test-unit && npm run test-e2e",
-		"prepare": "husky install"
+		"prepare": "husky install",
+		"changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
+		"changelog:reset": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
+		"prerelease": "run-s lint test build",
+		"release-it": "release-it",
+		"release": "run-s \"release-it -- --ci --git.requireBranch=master {1}\" --",
+		"release:canary": "run-s \"release-it -- {2} --preRelease={1} --ci\" -- "
 	},
 	"browserslist": {
 		"production": [
@@ -60,6 +70,7 @@
 		"@babel/preset-typescript": "^7.21.4",
 		"@fastify/cors": "^9.0.1",
 		"@fastify/formbody": "^7.4.0",
+		"@release-it/conventional-changelog": "^8.0.1",
 		"@rollup/plugin-commonjs": "^25.0.0",
 		"@rollup/plugin-json": "^6.0.0",
 		"@rollup/plugin-node-resolve": "^15.2.3",
@@ -84,10 +95,12 @@
 		"jest-environment-jsdom": "^29.7.0",
 		"jest-fetch-mock": "^3.0.3",
 		"jest-puppeteer": "^9.0.0",
-		"lint-staged": "^13.2.2",
+		"lint-staged": "^13.3.0",
+		"npm-run-all": "^4.1.5",
 		"puppeteer": "21.0.0",
 		"react-dom": "^18.2.0",
 		"react-router-dom": "^6.11.2",
+		"release-it": "^17.6.0",
 		"rollup": "^3.29.4",
 		"rollup-plugin-delete": "^2.0.0",
 		"rollup-plugin-dts": "^5.3.0",
@@ -112,5 +125,23 @@
 	},
 	"publishConfig": {
 		"access": "public"
+	},
+	"release-it": {
+		"git": {
+			"commitMessage": "chore(release): v${version}",
+			"requireBranch": false
+		},
+		"github": {
+			"release": true
+		},
+		"hooks": {
+			"after:release": "git checkout -b v${version}-release && git push -u"
+		},
+		"plugins": {
+			"@release-it/conventional-changelog": {
+				"preset": "angular",
+				"infile": "CHANGELOG.md"
+			}
+		}
 	}
 }

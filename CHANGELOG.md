@@ -1,5 +1,7 @@
 
 
+## [2.0.3](https://github.com/refrens/react-use-oauth2/compare/2.0.2-release-test.0...2.0.3) (2024-09-09)
+
 ## 2.0.2-release-test.0 (2024-09-09)
 
 

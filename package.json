@@ -23,7 +23,10 @@
 	"bugs": {
 		"url": "https://github.com/refrens/react-use-oauth2/issues"
 	},
-	"repository": "github:refrens/react-use-oauth2",
+	"repository": {
+		"type": "git",
+		"url": "git+ssh://git@github.com/refrens/react-use-oauth2.git"
+	},
 	"main": "dist/cjs/index.js",
 	"module": "dist/esm/index.js",
 	"dependencies": {
@@ -124,7 +127,7 @@
 		"*.{js,ts,tsx}": "eslint --cache --fix"
 	},
 	"publishConfig": {
-		"access": "public"
+		"registry": "https://npm.pkg.github.com/"
 	},
 	"release-it": {
 		"git": {

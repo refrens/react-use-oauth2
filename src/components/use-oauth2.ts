@@ -46,6 +46,7 @@ export const useOAuth2 = <TData = TAuthTokenPayload>(props: TOauth2Props<TData>)
 	);
 
 	const getAuth = useCallback(() => {
+		const channel = new BroadcastChannel('oauth_channel');
 		// 1. Init
 		setUI({
 			loading: true,
@@ -70,7 +71,7 @@ export const useOAuth2 = <TData = TAuthTokenPayload>(props: TOauth2Props<TData>)
 		);
 
 		// 4. Register message listener
-		async function handleMessageListener(message: MessageEvent<TMessageData>) {
+		async function handleBroadcastChannelMessage(message: MessageEvent<TMessageData>) {
 			const type = message?.data?.type;
 			if (type !== OAUTH_RESPONSE) {
 				return;
@@ -136,10 +137,11 @@ export const useOAuth2 = <TData = TAuthTokenPayload>(props: TOauth2Props<TData>)
 				if (onError) await onError(genericError.toString());
 			} finally {
 				// Clear stuff ...
-				cleanup(intervalRef, popupRef, handleMessageListener);
+				cleanup(intervalRef, popupRef, handleBroadcastChannelMessage);
 			}
 		}
-		window.addEventListener('message', handleMessageListener);
+		// eslint-disable-next-line unicorn/prefer-add-event-listener
+		channel.onmessage = handleBroadcastChannelMessage;
 
 		// 4. Begin interval to check if popup was closed forcefully by the user
 		intervalRef.current = setInterval(() => {
@@ -151,13 +153,14 @@ export const useOAuth2 = <TData = TAuthTokenPayload>(props: TOauth2Props<TData>)
 					loading: false,
 				}));
 				console.warn('Warning: Popup was closed before completing authentication.');
-				cleanup(intervalRef, popupRef, handleMessageListener);
+				cleanup(intervalRef, popupRef, handleBroadcastChannelMessage);
 			}
 		}, 250);
 
 		// 5. Remove listener(s) on unmount
 		return () => {
-			window.removeEventListener('message', handleMessageListener);
+			// eslint-disable-next-line unicorn/prefer-add-event-listener
+			channel.close();
 			if (intervalRef.current) clearInterval(intervalRef.current);
 		};
 	}, [

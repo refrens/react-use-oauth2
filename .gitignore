@@ -64,5 +64,9 @@ typings/
 build
 dist
 
+# yalc
+/.yalc
+yalc.lock
+
 # vscode
 .vscode

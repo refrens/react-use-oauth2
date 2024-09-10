@@ -1,12 +1,6 @@
 import { useEffect } from 'react';
 import { OAUTH_RESPONSE } from './constants';
-import {
-	channelPostMessage,
-	checkState,
-	isBroadcastChannel,
-	openerPostMessage,
-	queryToObject,
-} from './tools';
+import { channelPostMessage, checkState, isBroadcastChannel, queryToObject } from './tools';
 
 type Props = {
 	Component?: React.ReactElement;
@@ -32,7 +26,6 @@ export const OAuthPopup = ({
 		};
 		const state = payload?.state;
 		const error = payload?.error;
-		const opener = window?.opener;
 
 		if (isBroadcastChannel(channel)) {
 			const stateOk = state && checkState(sessionStorage, state);
@@ -47,11 +40,7 @@ export const OAuthPopup = ({
 								? 'OAuth error: An error has occured.'
 								: 'OAuth error: State mismatch.'
 						}`;
-
-				openerPostMessage(opener, {
-					type: OAUTH_RESPONSE,
-					error: errorMessage,
-				});
+				channelPostMessage(channel, { type: OAUTH_RESPONSE, error: errorMessage });
 			}
 		} else {
 			throw new Error('No BroadcastChannel support');

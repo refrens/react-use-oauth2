@@ -93,6 +93,16 @@ export const cleanup = (
 	window.removeEventListener('message', handleMessageListener);
 };
 
+export const cleanupChannel = (
+	intervalRef: React.MutableRefObject<string | number | NodeJS.Timeout | undefined>,
+	popupRef: React.MutableRefObject<Window | null | undefined>,
+	channel: BroadcastChannel
+) => {
+	clearInterval(intervalRef.current);
+	if (popupRef.current && typeof popupRef.current.close === 'function') closePopup(popupRef);
+	channel.close();
+};
+
 export const formatExchangeCodeForTokenServerURL = (
 	serverUrl: string,
 	clientId: string,

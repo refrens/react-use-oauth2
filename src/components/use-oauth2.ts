@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from 'react';
 import useLocalStorageState from 'use-local-storage-state';
 import { DEFAULT_EXCHANGE_CODE_FOR_TOKEN_METHOD, OAUTH_RESPONSE } from './constants';
 import {
-	cleanup,
+	cleanupChannel,
 	formatAuthorizeUrl,
 	formatExchangeCodeForTokenServerURL,
 	generateState,
@@ -137,7 +137,7 @@ export const useOAuth2 = <TData = TAuthTokenPayload>(props: TOauth2Props<TData>)
 				if (onError) await onError(genericError.toString());
 			} finally {
 				// Clear stuff ...
-				cleanup(intervalRef, popupRef, handleBroadcastChannelMessage);
+				cleanupChannel(intervalRef, popupRef, channel);
 			}
 		}
 		// eslint-disable-next-line unicorn/prefer-add-event-listener
@@ -153,7 +153,7 @@ export const useOAuth2 = <TData = TAuthTokenPayload>(props: TOauth2Props<TData>)
 					loading: false,
 				}));
 				console.warn('Warning: Popup was closed before completing authentication.');
-				cleanup(intervalRef, popupRef, handleBroadcastChannelMessage);
+				cleanupChannel(intervalRef, popupRef, channel);
 			}
 		}, 250);
 

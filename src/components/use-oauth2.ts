@@ -137,11 +137,20 @@ export const useOAuth2 = <TData = TAuthTokenPayload>(props: TOauth2Props<TData>)
 				if (onError) await onError(genericError.toString());
 			} finally {
 				// Clear stuff ...
+				console.log(
+					'channel',
+					channel,
+					popupRef.current,
+					popupRef.current?.close,
+					'insideeee'
+				);
 				cleanupChannel(intervalRef, popupRef, channel);
 			}
 		}
 		// eslint-disable-next-line unicorn/prefer-add-event-listener
 		channel.onmessage = handleBroadcastChannelMessage;
+
+		console.log('channel', channel, popupRef.current, popupRef.current?.close, 'outside');
 
 		// 4. Begin interval to check if popup was closed forcefully by the user
 		intervalRef.current = setInterval(() => {

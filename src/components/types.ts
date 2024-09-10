@@ -1,4 +1,4 @@
-import { OAUTH_RESPONSE, EXCHANGE_CODE_FOR_TOKEN_METHODS } from './constants';
+import { OAUTH_RESPONSE, EXCHANGE_CODE_FOR_TOKEN_METHODS, OAUTH_RESPONSE_ACK } from './constants';
 
 export type TAuthTokenPayload = {
 	token_type: string;
@@ -51,6 +51,10 @@ export type TMessageData =
 	  }
 	| {
 			type: typeof OAUTH_RESPONSE;
+			payload: any;
+	  }
+	| {
+			type: typeof OAUTH_RESPONSE_ACK;
 			payload: any;
 	  };
 

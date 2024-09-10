@@ -1,7 +1,12 @@
 import { useCallback, useRef, useState } from 'react';
 import useLocalStorageState from 'use-local-storage-state';
-import { DEFAULT_EXCHANGE_CODE_FOR_TOKEN_METHOD, OAUTH_RESPONSE } from './constants';
 import {
+	DEFAULT_EXCHANGE_CODE_FOR_TOKEN_METHOD,
+	OAUTH_RESPONSE,
+	OAUTH_RESPONSE_ACK,
+} from './constants';
+import {
+	channelPostMessage,
 	cleanupChannel,
 	formatAuthorizeUrl,
 	formatExchangeCodeForTokenServerURL,
@@ -23,6 +28,8 @@ export const useOAuth2 = <TData = TAuthTokenPayload>(props: TOauth2Props<TData>)
 		onSuccess,
 		onError,
 	} = props;
+
+	const [isAcknowledged, setIsAcknowledged] = useState(false);
 
 	useCheckProps<TData>(props);
 	const extraQueryParametersRef = useRef(extraQueryParameters);
@@ -46,7 +53,7 @@ export const useOAuth2 = <TData = TAuthTokenPayload>(props: TOauth2Props<TData>)
 	);
 
 	const getAuth = useCallback(() => {
-		const channel = new BroadcastChannel('oauth_channel');
+		const channel = new BroadcastChannel('refrens_oauth_channel');
 		// 1. Init
 		setUI({
 			loading: true,
@@ -137,6 +144,9 @@ export const useOAuth2 = <TData = TAuthTokenPayload>(props: TOauth2Props<TData>)
 				if (onError) await onError(genericError.toString());
 			} finally {
 				// Clear stuff ...
+				channelPostMessage(channel, { type: OAUTH_RESPONSE_ACK, payload: 'ack' });
+				setIsAcknowledged(true);
+				console.log('messsage sent', 'ack');
 				console.log(
 					'channel',
 					channel,
@@ -150,8 +160,6 @@ export const useOAuth2 = <TData = TAuthTokenPayload>(props: TOauth2Props<TData>)
 		// eslint-disable-next-line unicorn/prefer-add-event-listener
 		channel.onmessage = handleBroadcastChannelMessage;
 
-		console.log('channel', channel, popupRef.current, popupRef.current?.close, 'outside');
-
 		// 4. Begin interval to check if popup was closed forcefully by the user
 		intervalRef.current = setInterval(() => {
 			const popupClosed = !popupRef.current?.window || popupRef.current?.window?.closed;
@@ -161,7 +169,9 @@ export const useOAuth2 = <TData = TAuthTokenPayload>(props: TOauth2Props<TData>)
 					...ui,
 					loading: false,
 				}));
-				console.warn('Warning: Popup was closed before completing authentication.');
+				if (!isAcknowledged) {
+					console.warn('Warning: Popup was closed before completing authentication.');
+				}
 				cleanupChannel(intervalRef, popupRef, channel);
 			}
 		}, 250);

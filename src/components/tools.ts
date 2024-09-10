@@ -99,7 +99,7 @@ export const cleanupChannel = (
 	channel: BroadcastChannel
 ) => {
 	clearInterval(intervalRef.current);
-	console.log('channel', channel, popupRef.current, popupRef.current?.close);
+	console.log('channel clean up called', channel, popupRef.current, popupRef.current?.close);
 	if (popupRef.current && typeof popupRef.current.close === 'function') closePopup(popupRef);
 	channel.close();
 };

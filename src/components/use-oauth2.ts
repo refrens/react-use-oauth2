@@ -80,6 +80,7 @@ export const useOAuth2 = <TData = TAuthTokenPayload>(props: TOauth2Props<TData>)
 		// 4. Register message listener
 		async function handleBroadcastChannelMessage(message: MessageEvent<TMessageData>) {
 			const type = message?.data?.type;
+			console.log('message received', message);
 			if (type !== OAUTH_RESPONSE) {
 				return;
 			}
@@ -102,6 +103,7 @@ export const useOAuth2 = <TData = TAuthTokenPayload>(props: TOauth2Props<TData>)
 							typeof exchangeCodeForTokenQueryFn === 'function'
 						) {
 							payload = await exchangeCodeForTokenQueryFn(message.data?.payload);
+							console.log('payload', payload, 'herreeee');
 						} else if (exchangeCodeForTokenQuery) {
 							const response = await fetch(
 								formatExchangeCodeForTokenServerURL(
@@ -144,6 +146,7 @@ export const useOAuth2 = <TData = TAuthTokenPayload>(props: TOauth2Props<TData>)
 				if (onError) await onError(genericError.toString());
 			} finally {
 				// Clear stuff ...
+				console.log('reaching here, finalllyyyy');
 				channelPostMessage(channel, { type: OAUTH_RESPONSE_ACK, payload: 'ack' });
 				setIsAcknowledged(true);
 				console.log('messsage sent', 'ack');

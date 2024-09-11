@@ -40,7 +40,6 @@ export const OAuthPopup = ({
 
 			if (!error && stateOk) {
 				channelPostMessage(channel, { type: OAUTH_RESPONSE, payload });
-				console.log('message sent', payload);
 			} else {
 				const errorMessage = error
 					? decodeURI(error)
@@ -58,12 +57,10 @@ export const OAuthPopup = ({
 		}
 
 		const handleListener = (message: MessageEvent<TMessageData>) => {
-			console.log('message received', message);
 			const type = message?.data?.type;
 			if (type !== OAUTH_RESPONSE_ACK) {
 				return;
 			}
-			console.log('message received', message, window, 'after');
 			window.close();
 			removeState(sessionStorage);
 		};

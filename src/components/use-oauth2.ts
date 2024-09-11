@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import useLocalStorageState from 'use-local-storage-state';
 import {
 	DEFAULT_EXCHANGE_CODE_FOR_TOKEN_METHOD,
@@ -52,8 +52,9 @@ export const useOAuth2 = <TData = TAuthTokenPayload>(props: TOauth2Props<TData>)
 		}
 	);
 
+	const channel = useMemo(() => new BroadcastChannel('refrens_oauth_channel'), []);
+
 	const getAuth = useCallback(() => {
-		const channel = new BroadcastChannel('refrens_oauth_channel');
 		// 1. Init
 		setUI({
 			loading: true,
@@ -146,7 +147,7 @@ export const useOAuth2 = <TData = TAuthTokenPayload>(props: TOauth2Props<TData>)
 				if (onError) await onError(genericError.toString());
 			} finally {
 				// Clear stuff ...
-				console.log('reaching here, finalllyyyy');
+				console.log('reaching here, finalllyyyy', channel);
 				channelPostMessage(channel, { type: OAUTH_RESPONSE_ACK, payload: 'ack' });
 				setIsAcknowledged(true);
 				console.log('messsage sent', 'ack');
@@ -157,7 +158,7 @@ export const useOAuth2 = <TData = TAuthTokenPayload>(props: TOauth2Props<TData>)
 					popupRef.current?.close,
 					'insideeee'
 				);
-				cleanupChannel(intervalRef, popupRef, channel);
+				// cleanupChannel(intervalRef, popupRef, channel);
 			}
 		}
 		// eslint-disable-next-line unicorn/prefer-add-event-listener
@@ -175,7 +176,7 @@ export const useOAuth2 = <TData = TAuthTokenPayload>(props: TOauth2Props<TData>)
 				if (!isAcknowledged) {
 					console.warn('Warning: Popup was closed before completing authentication.');
 				}
-				cleanupChannel(intervalRef, popupRef, channel);
+				// cleanupChannel(intervalRef, popupRef, channel);
 			}
 		}, 250);
 
@@ -195,6 +196,8 @@ export const useOAuth2 = <TData = TAuthTokenPayload>(props: TOauth2Props<TData>)
 		onError,
 		setUI,
 		setData,
+		channel,
+		isAcknowledged,
 	]);
 
 	const logout = useCallback(() => {

@@ -29,8 +29,6 @@ export const useOAuth2 = <TData = TAuthTokenPayload>(props: TOauth2Props<TData>)
 		onError,
 	} = props;
 
-	const [isAcknowledged, setIsAcknowledged] = useState(false);
-
 	useCheckProps<TData>(props);
 	const extraQueryParametersRef = useRef(extraQueryParameters);
 	const popupRef = useRef<Window | null>();
@@ -146,23 +144,23 @@ export const useOAuth2 = <TData = TAuthTokenPayload>(props: TOauth2Props<TData>)
 			} finally {
 				// Clear stuff ...
 				channelPostMessage(channel, { type: OAUTH_RESPONSE_ACK, payload: 'ack' });
-				setIsAcknowledged(true); // this is not working
+				cleanupChannel(intervalRef, popupRef, channel, handleBroadcastChannelMessage);
 			}
 		}
 		// eslint-disable-next-line unicorn/prefer-add-event-listener
 		channel.addEventListener('message', handleBroadcastChannelMessage);
 
 		// 4. Begin interval to check if popup was closed forcefully by the user
-		intervalRef.current = setInterval(() => {
-			if (!isAcknowledged) {
-				// Popup was closed before completing auth...
-				setUI((ui) => ({
-					...ui,
-					loading: false,
-				}));
-				console.log(isAcknowledged, 'isAcknowledged');
-			}
-		}, 250);
+		// intervalRef.current = setInterval(() => {
+		// 	if (! {
+		// 		// Popup was closed before completing auth...
+		// 		setUI((ui) => ({
+		// 			...ui,
+		// 			loading: false,
+		// 		}));
+		// 		console.log( ');
+		// 	}
+		// }, 250);
 
 		// 5. Remove listener(s) on unmount
 		return () => {
@@ -182,7 +180,6 @@ export const useOAuth2 = <TData = TAuthTokenPayload>(props: TOauth2Props<TData>)
 		setUI,
 		setData,
 		channel,
-		isAcknowledged,
 	]);
 
 	const logout = useCallback(() => {

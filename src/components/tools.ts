@@ -102,7 +102,7 @@ export const cleanupChannel = (
 	clearInterval(intervalRef.current);
 	removeState(sessionStorage);
 	channel.close();
-	window.removeEventListener('message', handleMessageListener);
+	channel.removeEventListener('message', handleMessageListener);
 };
 
 export const formatExchangeCodeForTokenServerURL = (

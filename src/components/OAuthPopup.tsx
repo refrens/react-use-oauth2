@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { OAUTH_RESPONSE, OAUTH_RESPONSE_ACK } from './constants';
 import {
 	channelPostMessage,
@@ -22,7 +22,8 @@ export const OAuthPopup = ({
 		</div>
 	),
 }: Props) => {
-	const channel = new BroadcastChannel('refrens_oauth_channel');
+	const channel = useMemo(() => new BroadcastChannel('refrens_oauth_channel'), []);
+
 	useEffect(() => {
 		if (didInit) return () => {};
 		didInit = true;
@@ -73,7 +74,7 @@ export const OAuthPopup = ({
 		return () => {
 			channel.removeEventListener('message', handleListener);
 		};
-	}, []);
+	}, [channel]);
 
 	return Component;
 };

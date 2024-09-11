@@ -166,15 +166,14 @@ export const useOAuth2 = <TData = TAuthTokenPayload>(props: TOauth2Props<TData>)
 
 		// 4. Begin interval to check if popup was closed forcefully by the user
 		intervalRef.current = setInterval(() => {
-			const popupClosed = !popupRef.current?.window || popupRef.current?.window?.closed;
-			if (popupClosed) {
+			if (!isAcknowledged) {
 				// Popup was closed before completing auth...
 				setUI((ui) => ({
 					...ui,
 					loading: false,
 				}));
 				console.log(isAcknowledged, 'isAcknowledged');
-				cleanupChannel(intervalRef, popupRef, channel, handleBroadcastChannelMessage);
+				// cleanupChannel(intervalRef, popupRef, channel, handleBroadcastChannelMessage);
 			}
 		}, 250);
 

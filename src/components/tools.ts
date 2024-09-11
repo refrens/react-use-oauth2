@@ -96,12 +96,13 @@ export const cleanup = (
 export const cleanupChannel = (
 	intervalRef: React.MutableRefObject<string | number | NodeJS.Timeout | undefined>,
 	popupRef: React.MutableRefObject<Window | null | undefined>,
-	channel: BroadcastChannel
+	channel: BroadcastChannel,
+	handleMessageListener: any
 ) => {
 	clearInterval(intervalRef.current);
-	console.log('channel clean up called', channel, popupRef.current, popupRef.current?.close);
-	if (popupRef.current && typeof popupRef.current.close === 'function') closePopup(popupRef);
+	removeState(sessionStorage);
 	channel.close();
+	window.removeEventListener('message', handleMessageListener);
 };
 
 export const formatExchangeCodeForTokenServerURL = (

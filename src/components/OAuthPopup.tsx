@@ -1,6 +1,12 @@
 import { useEffect } from 'react';
 import { OAUTH_RESPONSE, OAUTH_RESPONSE_ACK } from './constants';
-import { channelPostMessage, checkState, isBroadcastChannel, queryToObject } from './tools';
+import {
+	channelPostMessage,
+	checkState,
+	isBroadcastChannel,
+	queryToObject,
+	removeState,
+} from './tools';
 import { TMessageData } from './types';
 
 type Props = {
@@ -58,6 +64,7 @@ export const OAuthPopup = ({
 			}
 			console.log('message received', message, window, 'after');
 			window.close();
+			removeState(sessionStorage);
 		};
 
 		// eslint-disable-next-line unicorn/prefer-add-event-listener

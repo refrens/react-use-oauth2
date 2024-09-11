@@ -158,11 +158,11 @@ export const useOAuth2 = <TData = TAuthTokenPayload>(props: TOauth2Props<TData>)
 					popupRef.current?.close,
 					'insideeee'
 				);
-				// cleanupChannel(intervalRef, popupRef, channel);
+				cleanupChannel(intervalRef, popupRef, channel, handleBroadcastChannelMessage);
 			}
 		}
 		// eslint-disable-next-line unicorn/prefer-add-event-listener
-		channel.onmessage = handleBroadcastChannelMessage;
+		channel.addEventListener('message', handleBroadcastChannelMessage);
 
 		// 4. Begin interval to check if popup was closed forcefully by the user
 		intervalRef.current = setInterval(() => {
@@ -173,10 +173,8 @@ export const useOAuth2 = <TData = TAuthTokenPayload>(props: TOauth2Props<TData>)
 					...ui,
 					loading: false,
 				}));
-				if (!isAcknowledged) {
-					console.warn('Warning: Popup was closed before completing authentication.');
-				}
-				// cleanupChannel(intervalRef, popupRef, channel);
+				console.log(isAcknowledged, 'isAcknowledged');
+				cleanupChannel(intervalRef, popupRef, channel, handleBroadcastChannelMessage);
 			}
 		}, 250);
 
@@ -184,6 +182,7 @@ export const useOAuth2 = <TData = TAuthTokenPayload>(props: TOauth2Props<TData>)
 		return () => {
 			// eslint-disable-next-line unicorn/prefer-add-event-listener
 			channel.close();
+			channel.removeEventListener('message', handleBroadcastChannelMessage);
 			if (intervalRef.current) clearInterval(intervalRef.current);
 		};
 	}, [

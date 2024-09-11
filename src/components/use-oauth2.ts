@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import useLocalStorageState from 'use-local-storage-state';
 import {
 	DEFAULT_EXCHANGE_CODE_FOR_TOKEN_METHOD,
@@ -50,7 +50,7 @@ export const useOAuth2 = <TData = TAuthTokenPayload>(props: TOauth2Props<TData>)
 		}
 	);
 
-	const channel = useMemo(() => new BroadcastChannel('refrens_oauth_channel'), []);
+	const channel = useRef(new BroadcastChannel('refrens_oauth_channel'));
 
 	const getAuth = useCallback(() => {
 		// 1. Init
@@ -143,30 +143,23 @@ export const useOAuth2 = <TData = TAuthTokenPayload>(props: TOauth2Props<TData>)
 				if (onError) await onError(genericError.toString());
 			} finally {
 				// Clear stuff ...
-				channelPostMessage(channel, { type: OAUTH_RESPONSE_ACK, payload: 'ack' });
-				cleanupChannel(intervalRef, popupRef, channel, handleBroadcastChannelMessage);
+				channelPostMessage(channel.current, { type: OAUTH_RESPONSE_ACK, payload: 'ack' });
+				cleanupChannel(
+					intervalRef,
+					popupRef,
+					channel.current,
+					handleBroadcastChannelMessage
+				);
 			}
 		}
 		// eslint-disable-next-line unicorn/prefer-add-event-listener
-		channel.addEventListener('message', handleBroadcastChannelMessage);
-
-		// 4. Begin interval to check if popup was closed forcefully by the user
-		// intervalRef.current = setInterval(() => {
-		// 	if (! {
-		// 		// Popup was closed before completing auth...
-		// 		setUI((ui) => ({
-		// 			...ui,
-		// 			loading: false,
-		// 		}));
-		// 		console.log( ');
-		// 	}
-		// }, 250);
+		channel.current.addEventListener('message', handleBroadcastChannelMessage);
 
 		// 5. Remove listener(s) on unmount
 		return () => {
 			// eslint-disable-next-line unicorn/prefer-add-event-listener
-			channel.close();
-			channel.removeEventListener('message', handleBroadcastChannelMessage);
+			channel.current.close();
+			channel.current.removeEventListener('message', handleBroadcastChannelMessage);
 			if (intervalRef.current) clearInterval(intervalRef.current);
 		};
 	}, [

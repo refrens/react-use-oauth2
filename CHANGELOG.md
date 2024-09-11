@@ -1,5 +1,7 @@
 
 
+## [2.0.4-broadcast-channel.6](https://github.com/refrens/react-use-oauth2/compare/2.0.4-broadcast-channel.5...2.0.4-broadcast-channel.6) (2024-09-11)
+
 ## [2.0.4-broadcast-channel.5](https://github.com/refrens/react-use-oauth2/compare/2.0.4-broadcast-channel.4...2.0.4-broadcast-channel.5) (2024-09-11)
 
 ## [2.0.4-broadcast-channel.4](https://github.com/refrens/react-use-oauth2/compare/2.0.4-broadcast-channel.3...2.0.4-broadcast-channel.4) (2024-09-10)

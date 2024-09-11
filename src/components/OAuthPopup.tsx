@@ -1,12 +1,13 @@
-import { useEffect } from 'react';
-import { OAUTH_RESPONSE } from './constants';
+import { useCallback, useEffect, useRef } from 'react';
+import { OAUTH_RESPONSE, OAUTH_RESPONSE_ACK } from './constants';
 import {
 	channelPostMessage,
 	checkState,
 	isBroadcastChannel,
-	openerPostMessage,
 	queryToObject,
+	removeState,
 } from './tools';
+import { TMessageData } from './types';
 
 type Props = {
 	Component?: React.ReactElement;
@@ -21,9 +22,19 @@ export const OAuthPopup = ({
 		</div>
 	),
 }: Props) => {
-	const channel = new BroadcastChannel('oauth_channel');
+	const handleListener = useCallback((message: MessageEvent<TMessageData>) => {
+		const type = message?.data?.type;
+		if (type !== OAUTH_RESPONSE_ACK) {
+			return;
+		}
+		window.close();
+		removeState(sessionStorage);
+	}, []);
+
+	const channel = useRef(new BroadcastChannel('refrens_oauth_channel'));
+
 	useEffect(() => {
-		if (didInit) return;
+		if (didInit) return () => {};
 		didInit = true;
 
 		const payload = {
@@ -32,13 +43,12 @@ export const OAuthPopup = ({
 		};
 		const state = payload?.state;
 		const error = payload?.error;
-		const opener = window?.opener;
 
-		if (isBroadcastChannel(channel)) {
+		if (isBroadcastChannel(channel.current)) {
 			const stateOk = state && checkState(sessionStorage, state);
 
 			if (!error && stateOk) {
-				channelPostMessage(channel, { type: OAUTH_RESPONSE, payload });
+				channelPostMessage(channel.current, { type: OAUTH_RESPONSE, payload });
 			} else {
 				const errorMessage = error
 					? decodeURI(error)
@@ -47,16 +57,20 @@ export const OAuthPopup = ({
 								? 'OAuth error: An error has occured.'
 								: 'OAuth error: State mismatch.'
 						}`;
-
-				openerPostMessage(opener, {
-					type: OAUTH_RESPONSE,
-					error: errorMessage,
-				});
+				channelPostMessage(channel.current, { type: OAUTH_RESPONSE, error: errorMessage });
 			}
 		} else {
 			throw new Error('No BroadcastChannel support');
 		}
-	}, []);
+
+		// eslint-disable-next-line unicorn/prefer-add-event-listener
+		channel.current.addEventListener('message', handleListener);
+
+		return () => {
+			channel.current.close();
+			channel.current.removeEventListener('message', handleListener);
+		};
+	}, [handleListener, channel]);
 
 	return Component;
 };

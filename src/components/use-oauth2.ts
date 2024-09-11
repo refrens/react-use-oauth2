@@ -1,8 +1,13 @@
 import { useCallback, useRef, useState } from 'react';
 import useLocalStorageState from 'use-local-storage-state';
-import { DEFAULT_EXCHANGE_CODE_FOR_TOKEN_METHOD, OAUTH_RESPONSE } from './constants';
 import {
-	cleanup,
+	DEFAULT_EXCHANGE_CODE_FOR_TOKEN_METHOD,
+	OAUTH_RESPONSE,
+	OAUTH_RESPONSE_ACK,
+} from './constants';
+import {
+	channelPostMessage,
+	cleanupChannel,
 	formatAuthorizeUrl,
 	formatExchangeCodeForTokenServerURL,
 	generateState,
@@ -45,8 +50,9 @@ export const useOAuth2 = <TData = TAuthTokenPayload>(props: TOauth2Props<TData>)
 		}
 	);
 
+	const channel = useRef(new BroadcastChannel('refrens_oauth_channel'));
+
 	const getAuth = useCallback(() => {
-		const channel = new BroadcastChannel('oauth_channel');
 		// 1. Init
 		setUI({
 			loading: true,
@@ -137,30 +143,23 @@ export const useOAuth2 = <TData = TAuthTokenPayload>(props: TOauth2Props<TData>)
 				if (onError) await onError(genericError.toString());
 			} finally {
 				// Clear stuff ...
-				cleanup(intervalRef, popupRef, handleBroadcastChannelMessage);
+				channelPostMessage(channel.current, { type: OAUTH_RESPONSE_ACK, payload: 'ack' });
+				cleanupChannel(
+					intervalRef,
+					popupRef,
+					channel.current,
+					handleBroadcastChannelMessage
+				);
 			}
 		}
 		// eslint-disable-next-line unicorn/prefer-add-event-listener
-		channel.onmessage = handleBroadcastChannelMessage;
-
-		// 4. Begin interval to check if popup was closed forcefully by the user
-		intervalRef.current = setInterval(() => {
-			const popupClosed = !popupRef.current?.window || popupRef.current?.window?.closed;
-			if (popupClosed) {
-				// Popup was closed before completing auth...
-				setUI((ui) => ({
-					...ui,
-					loading: false,
-				}));
-				console.warn('Warning: Popup was closed before completing authentication.');
-				cleanup(intervalRef, popupRef, handleBroadcastChannelMessage);
-			}
-		}, 250);
+		channel.current.addEventListener('message', handleBroadcastChannelMessage);
 
 		// 5. Remove listener(s) on unmount
 		return () => {
 			// eslint-disable-next-line unicorn/prefer-add-event-listener
-			channel.close();
+			channel.current.close();
+			channel.current.removeEventListener('message', handleBroadcastChannelMessage);
 			if (intervalRef.current) clearInterval(intervalRef.current);
 		};
 	}, [
@@ -173,6 +172,7 @@ export const useOAuth2 = <TData = TAuthTokenPayload>(props: TOauth2Props<TData>)
 		onError,
 		setUI,
 		setData,
+		channel,
 	]);
 
 	const logout = useCallback(() => {

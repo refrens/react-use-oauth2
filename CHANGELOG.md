@@ -1,5 +1,25 @@
 
 
+## [2.0.4-broadcast-channel.9](https://github.com/refrens/react-use-oauth2/compare/2.0.4-broadcast-channel.8...2.0.4-broadcast-channel.9) (2024-09-11)
+
+## [2.0.4-broadcast-channel.8](https://github.com/refrens/react-use-oauth2/compare/2.0.4-broadcast-channel.7...2.0.4-broadcast-channel.8) (2024-09-11)
+
+## [2.0.4-broadcast-channel.7](https://github.com/refrens/react-use-oauth2/compare/2.0.4-broadcast-channel.6...2.0.4-broadcast-channel.7) (2024-09-11)
+
+## [2.0.4-broadcast-channel.6](https://github.com/refrens/react-use-oauth2/compare/2.0.4-broadcast-channel.5...2.0.4-broadcast-channel.6) (2024-09-11)
+
+## [2.0.4-broadcast-channel.5](https://github.com/refrens/react-use-oauth2/compare/2.0.4-broadcast-channel.4...2.0.4-broadcast-channel.5) (2024-09-11)
+
+## [2.0.4-broadcast-channel.4](https://github.com/refrens/react-use-oauth2/compare/2.0.4-broadcast-channel.3...2.0.4-broadcast-channel.4) (2024-09-10)
+
+## [2.0.4-broadcast-channel.3](https://github.com/refrens/react-use-oauth2/compare/2.0.4-broadcast-channel.2...2.0.4-broadcast-channel.3) (2024-09-10)
+
+## [2.0.4-broadcast-channel.2](https://github.com/refrens/react-use-oauth2/compare/2.0.4-broadcast-channel.1...2.0.4-broadcast-channel.2) (2024-09-10)
+
+## [2.0.4-broadcast-channel.1](https://github.com/refrens/react-use-oauth2/compare/2.0.4-broadcast-channel.0...2.0.4-broadcast-channel.1) (2024-09-10)
+
+## [2.0.4-broadcast-channel.0](https://github.com/refrens/react-use-oauth2/compare/2.0.3...2.0.4-broadcast-channel.0) (2024-09-10)
+
 ## [2.0.3](https://github.com/refrens/react-use-oauth2/compare/2.0.2-release-test.0...2.0.3) (2024-09-09)
 
 ## 2.0.2-release-test.0 (2024-09-09)
